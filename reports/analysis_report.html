@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국남동발전 대기오염물질 배출 최적화 분석 보고서</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    color: #1a1a1a;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 40px 40px 40px;
+}
+
+h1 {
+    font-size: 20pt;
+    font-weight: 700;
+    color: #1a3a5c;
+    border-bottom: 3px solid #1a3a5c;
+    padding-bottom: 10px;
+    margin-top: 30px;
+}
+
+h2 {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #1a3a5c;
+    border-bottom: 2px solid #3a7abf;
+    padding-bottom: 6px;
+    margin-top: 30px;
+}
+
+h3 {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #2c5282;
+    margin-top: 22px;
+    margin-bottom: 8px;
+}
+
+h4 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #2d3748;
+    margin-top: 18px;
+    margin-bottom: 6px;
+}
+
+p { margin: 6px 0 10px 0; }
+
+/* 표 */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 10pt;
+}
+
+th {
+    background-color: #2b6cb0;
+    color: white;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 500;
+}
+
+td {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e0;
+}
+
+tr:nth-child(even) td { background-color: #f7fafc; }
+tr:hover td { background-color: #ebf4ff; }
+
+/* 코드 */
+code {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    background-color: #f1f5f9;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+    color: #c7254e;
+}
+
+pre {
+    background-color: #1e2433;
+    color: #e2e8f0;
+    padding: 14px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 9pt;
+    line-height: 1.5;
+    margin: 12px 0;
+}
+
+pre code {
+    background: none;
+    color: #e2e8f0;
+    padding: 0;
+}
+
+/* 인용 */
+blockquote {
+    border-left: 4px solid #3a7abf;
+    background-color: #eff8ff;
+    margin: 12px 0;
+    padding: 8px 16px;
+    color: #2c5282;
+    border-radius: 0 4px 4px 0;
+    font-size: 10.5pt;
+}
+
+blockquote p { margin: 4px 0; }
+
+/* 리스트 */
+ul, ol {
+    padding-left: 22px;
+    margin: 8px 0;
+}
+
+li { margin-bottom: 4px; }
+
+/* 구분선 */
+hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 24px 0;
+}
+
+/* 강조 */
+strong { color: #1a3a5c; }
+
+/* 페이지 나누기 방지 */
+h2, h3 { page-break-after: avoid; }
+table   { page-break-inside: avoid; }
+
+/* 페이지 헤더/푸터 */
+@page {
+    size: A4;
+    margin: 20mm 18mm 20mm 18mm;
+    @bottom-center {
+        content: counter(page) " / " counter(pages);
+        font-size: 9pt;
+        color: #718096;
+    }
+}
+
+</style>
+</head>
+<body>
+<h1 id="_1">한국남동발전 대기오염물질 배출 최적화 분석 보고서</h1>
+<p><strong>프로젝트</strong>: 2026 기후부 AX 아이디어 경진대회 — 데이터 분석 부문<br />
+<strong>과제</strong>: 기상 및 발전 데이터를 활용한 대기오염물질 배출 최적화 모델 개발<br />
+<strong>분석 대상</strong>: 삼천포화력 · 영흥화력 · 분당복합화력 (한국남동발전 3사업소)<br />
+<strong>분석 기간</strong>: 2020-07-16 ~ 2026-05-09<br />
+<strong>작성일</strong>: 2026-05-10</p>
+<hr />
+<h2 id="i">Ⅰ. 데이터 현황</h2>
+<h3 id="11">1.1 원천 데이터</h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+<th>주기</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>대기오염물질배출농도(일평균).xls</td>
+<td>SOx·NOx·먼지 농도+유량</td>
+<td>일</td>
+</tr>
+<tr>
+<td>기상정보(일평균).xls</td>
+<td>온도·습도·풍향·풍속 등</td>
+<td>일</td>
+</tr>
+<tr>
+<td>연료소비실적.xls</td>
+<td>유연탄·LNG 소비량</td>
+<td>월</td>
+</tr>
+<tr>
+<td>발전실적.xls</td>
+<td>발전량·열효율·이용률</td>
+<td>월</td>
+</tr>
+<tr>
+<td>화력_YYYYMM.xlsx (every/)</td>
+<td>일별 발전량 (시간별 합산)</td>
+<td>일</td>
+</tr>
+<tr>
+<td>태양광·풍력·해양소수력_*.xlsx</td>
+<td>사업소별 신재생 발전량</td>
+<td>시간</td>
+</tr>
+<tr>
+<td>연료전지_*.xlsx</td>
+<td>분당연료전지 발전량</td>
+<td>시간</td>
+</tr>
+<tr>
+<td>Open-Meteo 기상 CSV</td>
+<td>삼천포·영흥 외부 기상</td>
+<td>일</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12">1.2 가공 마스터 데이터셋</h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>사업소</th>
+<th>기간</th>
+<th style="text-align: right;">행수</th>
+<th style="text-align: right;">컬럼</th>
+<th>특징</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master_삼천포.csv</code></td>
+<td>삼천포 화력</td>
+<td>2020-07-16 ~ 2026-05-09</td>
+<td style="text-align: right;">2,123</td>
+<td style="text-align: right;">39</td>
+<td>석탄, SOx/NOx/먼지</td>
+</tr>
+<tr>
+<td><code>master_영흥.csv</code></td>
+<td>영흥 화력</td>
+<td>2020-07-16 ~ 2026-05-09</td>
+<td style="text-align: right;">2,121</td>
+<td style="text-align: right;">37</td>
+<td>석탄, SOx/NOx/먼지</td>
+</tr>
+<tr>
+<td><code>master_분당.csv</code></td>
+<td>분당 복합화력</td>
+<td>2022-01-01 ~ 2026-04-30</td>
+<td style="text-align: right;">1,497</td>
+<td style="text-align: right;">37</td>
+<td>LNG, NOx 위주</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13">1.3 배출량 기초 통계</h3>
+<table>
+<thead>
+<tr>
+<th>사업소</th>
+<th>연료</th>
+<th style="text-align: center;">SOx (kg/day)</th>
+<th style="text-align: center;">NOx (kg/day)</th>
+<th style="text-align: center;">먼지 (kg/day)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>삼천포</td>
+<td>유연탄</td>
+<td style="text-align: center;">7,138 (±3,407)</td>
+<td style="text-align: center;">11,839 (±6,885)</td>
+<td style="text-align: center;">6,487 (±19,064)</td>
+</tr>
+<tr>
+<td>영흥</td>
+<td>유연탄</td>
+<td style="text-align: center;">13,410 (±4,986)</td>
+<td style="text-align: center;">12,924 (±5,359)</td>
+<td style="text-align: center;">2,871 (±4,648)</td>
+</tr>
+<tr>
+<td>분당</td>
+<td>LNG</td>
+<td style="text-align: center;">≈ 0</td>
+<td style="text-align: center;">1,812 (±1,672)</td>
+<td style="text-align: center;">≈ 0</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>배출량 산정 공식</strong>: 일 배출량(kg) = 농도(mg/Sm³) × 유량(Sm³/min) × 1,440 min/일 ÷ 1,000,000<br />
+(원천 데이터 유량 단위: Sm³/min)</p>
+</blockquote>
+<h3 id="14">1.4 발전 현황</h3>
+<table>
+<thead>
+<tr>
+<th>사업소</th>
+<th>설비용량</th>
+<th style="text-align: center;">평균 발전량</th>
+<th style="text-align: center;">평균 이용률</th>
+<th>신재생</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>삼천포</td>
+<td>3,240 MW</td>
+<td style="text-align: center;">28,427 MWh/일</td>
+<td style="text-align: center;">52.7%</td>
+<td>태양광 38 MWh/일, 풍력 0.3 MWh/일</td>
+</tr>
+<tr>
+<td>영흥</td>
+<td>5,080 MW</td>
+<td style="text-align: center;">67,585 MWh/일</td>
+<td style="text-align: center;">82.8%</td>
+<td>태양광 26 MWh/일, 풍력 53 MWh/일</td>
+</tr>
+<tr>
+<td>분당</td>
+<td>890 MW</td>
+<td style="text-align: center;">6,693 MWh/일</td>
+<td style="text-align: center;">31.0%</td>
+<td>연료전지 586 MWh/일</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="ii">Ⅱ. 데이터 전처리 및 특성 공학</h2>
+<h3 id="21">2.1 주요 전처리 사항</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>처리 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>발전량 단위</td>
+<td>화력 xlsx <code>총량(KW)</code> 컬럼은 실제 KWh → <code>/1000</code> 으로 MWh 변환</td>
+</tr>
+<tr>
+<td>열효율</td>
+<td>분당 발전실적 CG 호기 기준 월별 평균 → 일별 ffill (CS 호기 제외)</td>
+</tr>
+<tr>
+<td>연료 소비</td>
+<td>월별 LNG·유연탄 ton → 일별 균등 배분</td>
+</tr>
+<tr>
+<td>신재생</td>
+<td><code>every/</code> 시간별 KWh 합산 → 발전소별 일별 MWh 집계</td>
+</tr>
+<tr>
+<td>Lag 피처</td>
+<td>전일(t-1)·7일 전(t-7) 배출량 — 설비 연속 운전 패턴 반영</td>
+</tr>
+<tr>
+<td>SOx 배출계수</td>
+<td><code>sox_factor_ma30</code> = SOx/유연탄 30일 이동평균 — 연료 황 함량 proxy</td>
+</tr>
+<tr>
+<td>대기정체 지수</td>
+<td><code>stagnation_idx</code> = 습도 / max(풍속, 0.1)</td>
+</tr>
+<tr>
+<td>계절관리제 더미</td>
+<td><code>seasonal_mgmt</code> = 1 (12~3월), 0 (나머지)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22">2.2 특성 그룹</h3>
+<table>
+<thead>
+<tr>
+<th>그룹</th>
+<th>피처</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기상</td>
+<td>온도·습도·풍향(sin/cos)·풍속·강수·기압·일사·정체지수</td>
+<td>10종</td>
+</tr>
+<tr>
+<td>발전</td>
+<td>gen_mwh_combined·utilization·heat_efficiency</td>
+<td>API 실측 우선</td>
+</tr>
+<tr>
+<td>연료</td>
+<td>유연탄 (석탄만)</td>
+<td>LNG 발전소 제외</td>
+</tr>
+<tr>
+<td>신재생</td>
+<td>solar_mwh·wind_mwh·renewable_ratio</td>
+<td>계통 여유 반영</td>
+</tr>
+<tr>
+<td>시간</td>
+<td>month·dayofweek·season 더미·seasonal_mgmt</td>
+<td></td>
+</tr>
+<tr>
+<td>Lag</td>
+<td>SOx/NOx/먼지 × lag1·lag7·sox_factor_ma30</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="iii">Ⅲ. 예측 모델링</h2>
+<h3 id="31">3.1 모델 구조</h3>
+<ul>
+<li><strong>알고리즘</strong>: XGBoost MultiOutputRegressor (SOx·NOx·먼지 동시 예측)  </li>
+<li><strong>분할</strong>: 시계열 순서 Train 80% / Validation 10% / Test 10% (랜덤 분할 금지)  </li>
+<li><strong>분당</strong>: NOx 단독 예측 (SOx·먼지 ≈ 0이므로 제외)</li>
+</ul>
+<h3 id="32-test-set">3.2 모델 성능 (Test Set)</h3>
+<table>
+<thead>
+<tr>
+<th>사업소</th>
+<th>타겟</th>
+<th>R²</th>
+<th style="text-align: center;">MAE (kg/day)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>삼천포</td>
+<td>SOx</td>
+<td><strong>+0.737</strong></td>
+<td style="text-align: center;">1,111</td>
+</tr>
+<tr>
+<td>삼천포</td>
+<td>NOx</td>
+<td><strong>+0.400</strong></td>
+<td style="text-align: center;">2,476</td>
+</tr>
+<tr>
+<td>삼천포</td>
+<td>먼지</td>
+<td>-0.038</td>
+<td style="text-align: center;">9,487</td>
+</tr>
+<tr>
+<td>영흥</td>
+<td>SOx</td>
+<td><strong>+0.620</strong></td>
+<td style="text-align: center;">1,220</td>
+</tr>
+<tr>
+<td>영흥</td>
+<td>NOx</td>
+<td><strong>+0.349</strong></td>
+<td style="text-align: center;">1,244</td>
+</tr>
+<tr>
+<td>영흥</td>
+<td>먼지</td>
+<td>-0.039</td>
+<td style="text-align: center;">2,611</td>
+</tr>
+<tr>
+<td>분당</td>
+<td>NOx</td>
+<td><strong>+0.907</strong></td>
+<td style="text-align: center;">261</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-nox-lng-vs">3.3 NOx 예측 성능 격차: LNG vs 석탄</h3>
+<p>분당(LNG) NOx R²=0.907 vs 삼천포·영흥(석탄) R²=0.35~0.40 의 격차 원인:</p>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>LNG (분당)</th>
+<th>유연탄 (삼천포·영흥)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NOx 생성 메커니즘</td>
+<td>연료량·연소온도에 비교적 선형 반응</td>
+<td>화염 온도·산소 농도·연소 시간 복합 비선형 의존</td>
+</tr>
+<tr>
+<td>운전 패턴</td>
+<td>계통 수요에 따라 넓은 범위(0~96%) 가변 → 예측 신호 풍부</td>
+<td>기저부하 고정 운전 → 이용률 변동폭 좁음, 배출량 변동이 노이즈에 묻힘</td>
+</tr>
+<tr>
+<td>설비 구조</td>
+<td>복합발전(가스터빈+증기터빈) — 배기 특성 상대적으로 안정</td>
+<td>다수 호기(6기) 각기 다른 연소 상태 → 집계 배출량 변동성 높음</td>
+</tr>
+<tr>
+<td>피처 품질</td>
+<td>발전량(api_gen_mwh) 실측치 완전</td>
+<td>발전량 일부 보간, 연료 소비 월별 균등 배분</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>결론</strong>: 석탄 NOx R² 0.35~0.40은 데이터 한계 + 비선형 연소 물리의 복합 결과. 단일 변수 기반 예측 목적이 아닌 <strong>상대적 비교·방향성 판단</strong>에 활용.</p>
+</blockquote>
+<hr />
+<h3 id="34-m1m5">3.4 먼지 모델 한계 분석 (M1~M5 비교)</h3>
+<p>먼지 R² &lt; 0 원인 조사를 위해 5가지 모델 변형을 비교했습니다.</p>
+<table>
+<thead>
+<tr>
+<th>모델</th>
+<th>설명</th>
+<th style="text-align: center;">삼천포 R²</th>
+<th style="text-align: center;">영흥 R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>기존 MultiOutput 기준선</td>
+<td style="text-align: center;">-0.024</td>
+<td style="text-align: center;">-0.041</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>단독 XGBoost, 기존 피처</td>
+<td style="text-align: center;">-0.021</td>
+<td style="text-align: center;">-0.059</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>M2 + rolling7·year_trend 추가</td>
+<td style="text-align: center;">-0.067</td>
+<td style="text-align: center;">-0.051</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>M2 + 99th pct 윈저라이징</td>
+<td style="text-align: center;"><strong>-0.001</strong></td>
+<td style="text-align: center;"><strong>-0.031</strong></td>
+</tr>
+<tr>
+<td>M5</td>
+<td>M3 + log(먼지+1) 변환</td>
+<td style="text-align: center;">-0.048</td>
+<td style="text-align: center;">-0.057</td>
+</tr>
+</tbody>
+</table>
+<p><strong>근본 원인</strong>: 측정 이상치의 구조적 지배</p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th style="text-align: center;">삼천포</th>
+<th style="text-align: center;">영흥</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>먼지 중간값</td>
+<td style="text-align: center;">2,080 kg/day</td>
+<td style="text-align: center;">1,947 kg/day</td>
+</tr>
+<tr>
+<td>먼지 최대값</td>
+<td style="text-align: center;">465,606 kg/day</td>
+<td style="text-align: center;">75,369 kg/day</td>
+</tr>
+<tr>
+<td>99th pct 초과일 (22일)</td>
+<td style="text-align: center;">전체 오차의 <strong>83.3%</strong> 차지</td>
+<td style="text-align: center;">전체 오차의 <strong>68.3%</strong> 차지</td>
+</tr>
+<tr>
+<td>극단값 제외 시 R² (M4)</td>
+<td style="text-align: center;"><strong>+0.084</strong></td>
+<td style="text-align: center;">-0.022</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>결론</strong>: 삼천포는 측정 이상치 22일(테스트셋의 1.4%)이 RMSE를 지배. 정상 운전 구간 R²는 +0.084로 양수. 주기적 설비 점검·시동 시 발생하는 순간 고농도 방출이 모델로 예측 불가능한 구조적 한계임.</p>
+</blockquote>
+<hr />
+<h2 id="iv-nox">Ⅳ. 기상 조건별 NOx 배출 감도 분석</h2>
+<h3 id="41">4.1 단일 변수 스위프 결과</h3>
+<p>기상 변수를 각각 연속 변화시키며 NOx 예측 변동폭을 측정했습니다 (나머지 피처는 학습 데이터 평균 고정).</p>
+<table>
+<thead>
+<tr>
+<th>변수</th>
+<th style="text-align: center;">삼천포 변동폭</th>
+<th style="text-align: center;">영흥 변동폭</th>
+<th style="text-align: center;">분당 변동폭</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기온 (-15~33°C)</td>
+<td style="text-align: center;"><strong>16.0%</strong></td>
+<td style="text-align: center;">3.0%</td>
+<td style="text-align: center;">6.8%</td>
+</tr>
+<tr>
+<td>풍속 (0.5~12 m/s)</td>
+<td style="text-align: center;"><strong>13.2%</strong></td>
+<td style="text-align: center;">5.1%</td>
+<td style="text-align: center;"><strong>13.1%</strong></td>
+</tr>
+<tr>
+<td>대기정체 지수 (5~100)</td>
+<td style="text-align: center;">1.6%</td>
+<td style="text-align: center;">2.0%</td>
+<td style="text-align: center;">8.5%</td>
+</tr>
+<tr>
+<td>상대습도 (20~100%)</td>
+<td style="text-align: center;">12.9%</td>
+<td style="text-align: center;">4.5%</td>
+<td style="text-align: center;">8.2%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-2d">4.2 2D 히트맵 주요 발견</h3>
+<ul>
+<li><strong>삼천포</strong>: 기온 29°C + 풍속 1.0 m/s 조건(여름 대기정체)에서 NOx 최고 약 11.7 ton/day  </li>
+<li><strong>삼천포</strong>: 기온 -15°C + 풍속 12 m/s 조건(겨울 강풍)에서 NOx 최저 약 10.0 ton/day  </li>
+<li><strong>영흥</strong>: 기상 조건에 따른 NOx 변동이 상대적으로 완만 (5% 이내) — 대규모 기저부하 특성  </li>
+<li><strong>분당</strong>: 풍속 감소(정체) 시 NOx 증가 패턴 명확 (13% 변동)</li>
+</ul>
+<h3 id="43-8">4.3 8개 기상 시나리오 정의</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th style="text-align: center;">기온</th>
+<th style="text-align: center;">풍속</th>
+<th style="text-align: center;">정체지수</th>
+<th>배경</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A: 여름 대기정체</td>
+<td style="text-align: center;">29°C</td>
+<td style="text-align: center;">1.0 m/s</td>
+<td style="text-align: center;">88.0</td>
+<td>여름 폭염·무풍</td>
+</tr>
+<tr>
+<td>B: 겨울 한파</td>
+<td style="text-align: center;">-5°C</td>
+<td style="text-align: center;">7.0 m/s</td>
+<td style="text-align: center;">6.4</td>
+<td>난방 피크</td>
+</tr>
+<tr>
+<td>C: 태양광 최대</td>
+<td style="text-align: center;">28°C</td>
+<td style="text-align: center;">3.0 m/s</td>
+<td style="text-align: center;">20.0</td>
+<td>맑은 여름날</td>
+</tr>
+<tr>
+<td>D: 풍력 최대</td>
+<td style="text-align: center;">15°C</td>
+<td style="text-align: center;">9.0 m/s</td>
+<td style="text-align: center;">7.2</td>
+<td>저기압 통과</td>
+</tr>
+<tr>
+<td>E: 봄 황사</td>
+<td style="text-align: center;">13°C</td>
+<td style="text-align: center;">2.5 m/s</td>
+<td style="text-align: center;">28.8</td>
+<td>황사 잔류</td>
+</tr>
+<tr>
+<td>F: 겨울 정체</td>
+<td style="text-align: center;">2°C</td>
+<td style="text-align: center;">1.0 m/s</td>
+<td style="text-align: center;">83.0</td>
+<td>계절관리제</td>
+</tr>
+<tr>
+<td>G: 신재생 피크</td>
+<td style="text-align: center;">16°C</td>
+<td style="text-align: center;">5.5 m/s</td>
+<td style="text-align: center;">10.5</td>
+<td>봄·가을 이행기</td>
+</tr>
+<tr>
+<td>H: 폭염 피크</td>
+<td style="text-align: center;">29°C</td>
+<td style="text-align: center;">1.2 m/s</td>
+<td style="text-align: center;">72.5</td>
+<td>냉방 최대 수요</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="v">Ⅴ. 사업소별 이용률 최적화</h2>
+<h3 id="51">5.1 이용률 제약 설정 근거</h3>
+<table>
+<thead>
+<tr>
+<th>사업소</th>
+<th style="text-align: center;">최소 이용률</th>
+<th>근거</th>
+<th style="text-align: center;">최대 이용률</th>
+<th>근거</th>
+<th style="text-align: center;">계절관리제 상한</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>삼천포</td>
+<td style="text-align: center;">25%</td>
+<td>계통 안정 하한</td>
+<td style="text-align: center;"><strong>84%</strong></td>
+<td>실데이터 99th pct</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td>영흥</td>
+<td style="text-align: center;"><strong>65%</strong></td>
+<td>실데이터 1st pct = 59.5% → 65% 설정</td>
+<td style="text-align: center;"><strong>94%</strong></td>
+<td>실데이터 99th pct</td>
+<td style="text-align: center;"><strong>80%</strong></td>
+</tr>
+<tr>
+<td>분당</td>
+<td style="text-align: center;">20%</td>
+<td>LNG 복합 유연성</td>
+<td style="text-align: center;">95%</td>
+<td>설비용량 기준</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>수정 전 문제</strong>: 영흥 이용률 최솟값 25% 설정은 실데이터에서 단 1회도 관측되지 않은 비현실적 제약이었음 (실측 최솟값 59.5%).</p>
+</blockquote>
+<h3 id="52-nox">5.2 삼천포 시나리오별 NOx 감축률</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th style="text-align: center;">현재 이용률</th>
+<th style="text-align: center;">최적 이용률</th>
+<th style="text-align: center;">NOx 감축률</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A: 여름 대기정체</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;"><strong>35%</strong></td>
+<td style="text-align: center;"><strong>29.0%</strong></td>
+</tr>
+<tr>
+<td>B: 겨울 한파</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;">28.0%</td>
+</tr>
+<tr>
+<td>C: 태양광 최대</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;">29.5%</td>
+</tr>
+<tr>
+<td>D: 풍력 최대</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;">26.0%</td>
+</tr>
+<tr>
+<td>E: 봄 황사</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;">28.0%</td>
+</tr>
+<tr>
+<td>F: 겨울 정체</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;">29.4%</td>
+</tr>
+<tr>
+<td>G: 신재생 피크</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;">27.4%</td>
+</tr>
+<tr>
+<td>H: 폭염 피크</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;"><strong>30.1%</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>해석</strong>: 삼천포 단일 감발 시 NOx 28~30% 감축 가능. 단, 감발 전력의 LNG 대체 증분 비용(55,000원/MWh × 9,544 MWh = 5.25억원/일)이 부과금 기준 환경 편익(0.08~0.11억원/일)보다 크므로 <strong>시스템 레벨 재배분 최적화</strong> 필요.</p>
+</blockquote>
+<h3 id="53-nox">5.3 영흥 시나리오별 NOx 감축률</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th style="text-align: center;">현재 이용률</th>
+<th style="text-align: center;">최적 이용률</th>
+<th style="text-align: center;">NOx 감축률</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A: 여름 대기정체</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;"><strong>65%</strong></td>
+<td style="text-align: center;">5.1%</td>
+</tr>
+<tr>
+<td>B: 겨울 한파</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">65%</td>
+<td style="text-align: center;">5.2%</td>
+</tr>
+<tr>
+<td>C: 태양광 최대</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">65%</td>
+<td style="text-align: center;">5.0%</td>
+</tr>
+<tr>
+<td>D: 풍력 최대</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">65%</td>
+<td style="text-align: center;">4.8%</td>
+</tr>
+<tr>
+<td>E: 봄 황사</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">65%</td>
+<td style="text-align: center;">4.8%</td>
+</tr>
+<tr>
+<td>F: 겨울 정체</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">65%</td>
+<td style="text-align: center;">5.1%</td>
+</tr>
+<tr>
+<td>G: 신재생 피크</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">65%</td>
+<td style="text-align: center;">5.2%</td>
+</tr>
+<tr>
+<td>H: 폭염 피크</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">65%</td>
+<td style="text-align: center;">5.0%</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>해석</strong>: 영흥은 실데이터 기반 하한(65%)까지 감발 시 NOx 4.8~5.2% 감축 가능. 절감폭은 크지 않으나 <strong>시스템 레벨 최적화</strong>(삼천포↓ + 영흥↑)에서 더 큰 효과를 발휘함.</p>
+</blockquote>
+<h3 id="54-nox">5.4 분당 시나리오별 NOx 감축률</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th style="text-align: center;">현재 이용률</th>
+<th style="text-align: center;">최적 이용률</th>
+<th style="text-align: center;">NOx 감축률</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A: 여름 대기정체</td>
+<td style="text-align: center;">31%</td>
+<td style="text-align: center;"><strong>20%</strong></td>
+<td style="text-align: center;">17.6%</td>
+</tr>
+<tr>
+<td>B: 겨울 한파</td>
+<td style="text-align: center;">31%</td>
+<td style="text-align: center;">20%</td>
+<td style="text-align: center;">23.4%</td>
+</tr>
+<tr>
+<td>C: 태양광 최대</td>
+<td style="text-align: center;">31%</td>
+<td style="text-align: center;">20%</td>
+<td style="text-align: center;"><strong>27.3%</strong></td>
+</tr>
+<tr>
+<td>E: 봄 황사</td>
+<td style="text-align: center;">31%</td>
+<td style="text-align: center;">20%</td>
+<td style="text-align: center;">15.2%</td>
+</tr>
+<tr>
+<td>F: 겨울 정체</td>
+<td style="text-align: center;">31%</td>
+<td style="text-align: center;">20%</td>
+<td style="text-align: center;">16.2%</td>
+</tr>
+<tr>
+<td>전 시나리오 평균</td>
+<td style="text-align: center;">31%</td>
+<td style="text-align: center;">20%</td>
+<td style="text-align: center;">~20%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="vi">Ⅵ. 시스템 레벨 연료 믹스 최적화</h2>
+<h3 id="61">6.1 분석 설계</h3>
+<p>단일 사업소 이용률 최적화를 넘어, <strong>3사업소 동시 배분 최적화</strong>를 수행했습니다.</p>
+<ul>
+<li><strong>결정 변수</strong>: 삼천포 이용률(12단계) × 영흥 이용률(7단계) = 최대 84 조합  </li>
+<li><strong>분당 발전량</strong>: 총수요 - 삼천포 - 영흥으로 역산 (용량 상한 제약)  </li>
+<li><strong>목적함수</strong>: 총 사회적 비용 최소화<br />
+<code>min: SOx×500 + NOx×2,130 + 먼지×770 (원/kg)</code><br />
+  (환경부 대기배출부과금 고시 기준 단가 적용)</li>
+<li><strong>총 기준 수요</strong>: 102,705 MWh/일 (3사업소 현재 평균 합산)</li>
+</ul>
+<h3 id="62">6.2 사회적 비용 단가 (환경부 대기배출부과금 기준)</h3>
+<table>
+<thead>
+<tr>
+<th>오염물질</th>
+<th style="text-align: center;">적용 단가</th>
+<th>근거</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SOx</td>
+<td style="text-align: center;"><strong>500 원/kg</strong></td>
+<td>환경부 대기배출부과금 고시 (2018년 이후)</td>
+</tr>
+<tr>
+<td>NOx</td>
+<td style="text-align: center;"><strong>2,130 원/kg</strong></td>
+<td>동일</td>
+</tr>
+<tr>
+<td>먼지 (PM)</td>
+<td style="text-align: center;"><strong>770 원/kg</strong></td>
+<td>동일</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>대기배출부과금은 오염물질 배출에 대해 법적으로 부과되는 최소 사회적 비용으로, 실제 건강 피해 기반 외부비용(KEI 추정)은 이보다 높을 수 있음.</p>
+</blockquote>
+<h3 id="63">6.3 시나리오별 최적 결과</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th style="text-align: center;">삼천포 최적 이용률</th>
+<th style="text-align: center;">영흥 최적 이용률</th>
+<th style="text-align: center;">분당 최적 발전량</th>
+<th style="text-align: center;">현재 NOx</th>
+<th style="text-align: center;">최적 NOx</th>
+<th style="text-align: center;">부과금 기준 절감</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>정상 (중위 기상)</strong></td>
+<td style="text-align: center;"><strong>36%</strong></td>
+<td style="text-align: center;"><strong>94%</strong></td>
+<td style="text-align: center;">6,706 MWh</td>
+<td style="text-align: center;">22.5 ton/일</td>
+<td style="text-align: center;">20.3 ton/일</td>
+<td style="text-align: center;"><strong>0.07억원/일 (11.3%)</strong></td>
+</tr>
+<tr>
+<td><strong>여름 대기정체</strong></td>
+<td style="text-align: center;">36%</td>
+<td style="text-align: center;">94%</td>
+<td style="text-align: center;">6,706 MWh</td>
+<td style="text-align: center;">22.6 ton/일</td>
+<td style="text-align: center;">20.2 ton/일</td>
+<td style="text-align: center;"><strong>0.08억원/일 (12.0%)</strong></td>
+</tr>
+<tr>
+<td><strong>봄 황사</strong></td>
+<td style="text-align: center;">36%</td>
+<td style="text-align: center;">94%</td>
+<td style="text-align: center;">6,706 MWh</td>
+<td style="text-align: center;">22.6 ton/일</td>
+<td style="text-align: center;">20.3 ton/일</td>
+<td style="text-align: center;"><strong>0.07억원/일 (11.5%)</strong></td>
+</tr>
+<tr>
+<td><strong>겨울 계절관리제</strong></td>
+<td style="text-align: center;"><strong>35%</strong></td>
+<td style="text-align: center;"><strong>80%</strong></td>
+<td style="text-align: center;"><strong>18,526 MWh</strong></td>
+<td style="text-align: center;">22.9 ton/일</td>
+<td style="text-align: center;">21.7 ton/일</td>
+<td style="text-align: center;"><strong>0.06억원/일 (8.9%)</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="64">6.4 핵심 발견</h3>
+<p><strong>정상·여름·봄 시나리오 (S0·SA·SE)</strong><br />
+- 공통 최적: 삼천포 36%↓ + 영흥 94%↑ + 분당 6,706 MWh<br />
+- <strong>삼천포 감발, 영흥 증발</strong>로 총 효율 개선 — 단위 효율이 높은 영흥에 발전 집중<br />
+- NOx 기준 약 11~12% 감축</p>
+<p><strong>겨울 계절관리제 (SF)</strong><br />
+- 계절관리제 80% 상한 → 삼천포 35% + 영흥 80% + 분당 18,526 MWh (LNG 보조 증가)<br />
+- NOx 8.9% 감축</p>
+<h3 id="65-vs">6.5 현행 운영 vs 최적 권고 — 직접 비교</h3>
+<blockquote>
+<p><strong>현행 운영</strong>: master CSV 실적 데이터 평균 (2020~2026)<br />
+<strong>최적 권고</strong>: 연료 믹스 그리드 서치 최솟값 (모델 예측 기반)</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">구분</th>
+<th>시나리오</th>
+<th style="text-align: center;">삼천포 이용률</th>
+<th style="text-align: center;">영흥 이용률</th>
+<th style="text-align: center;">분당 이용률</th>
+<th style="text-align: center;">석탄비중</th>
+<th style="text-align: center;">LNG비중</th>
+<th style="text-align: center;">NOx (ton/일)</th>
+<th style="text-align: center;">SOx (ton/일)</th>
+<th style="text-align: center;">가중 열효율</th>
+<th style="text-align: center;">절감 (억원/일)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">🔵 <strong>현행</strong></td>
+<td>비계절관리제 (4~11월)</td>
+<td style="text-align: center;">51.7%</td>
+<td style="text-align: center;">83.3%</td>
+<td style="text-align: center;">15.9%</td>
+<td style="text-align: center;">96.6%</td>
+<td style="text-align: center;">3.4%</td>
+<td style="text-align: center;"><strong>26.88</strong></td>
+<td style="text-align: center;">21.59</td>
+<td style="text-align: center;">28.6%</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td style="text-align: center;">🔵 <strong>현행</strong></td>
+<td>계절관리제 (12~3월)</td>
+<td style="text-align: center;">54.6%</td>
+<td style="text-align: center;">81.7%</td>
+<td style="text-align: center;">58.8%</td>
+<td style="text-align: center;">87.9%</td>
+<td style="text-align: center;">12.1%</td>
+<td style="text-align: center;"><strong>25.92</strong></td>
+<td style="text-align: center;">18.53</td>
+<td style="text-align: center;">28.2%</td>
+<td style="text-align: center;">—</td>
+</tr>
+<tr>
+<td style="text-align: center;">🟢 <strong>최적</strong></td>
+<td>비계절관리제 권고</td>
+<td style="text-align: center;"><strong>35.7%</strong></td>
+<td style="text-align: center;"><strong>94.0%</strong></td>
+<td style="text-align: center;">31.4%</td>
+<td style="text-align: center;">93.5%</td>
+<td style="text-align: center;">6.5%</td>
+<td style="text-align: center;"><strong>20.28</strong></td>
+<td style="text-align: center;">19.05</td>
+<td style="text-align: center;">24.9%</td>
+<td style="text-align: center;"><strong>0.187</strong></td>
+</tr>
+<tr>
+<td style="text-align: center;">🟢 <strong>최적</strong></td>
+<td>계절관리제 권고</td>
+<td style="text-align: center;"><strong>35.0%</strong></td>
+<td style="text-align: center;">80.0%</td>
+<td style="text-align: center;"><strong>86.7%</strong></td>
+<td style="text-align: center;">82.0%</td>
+<td style="text-align: center;">18.0%</td>
+<td style="text-align: center;"><strong>21.66</strong></td>
+<td style="text-align: center;">18.82</td>
+<td style="text-align: center;">28.0%</td>
+<td style="text-align: center;"><strong>0.140</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>핵심 인사이트</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>기간</th>
+<th style="text-align: center;">NOx 감축률</th>
+<th style="text-align: center;">SOx 감축률</th>
+<th style="text-align: center;">열효율 변화</th>
+<th>절감액</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>비계절관리제 (4~11월)</td>
+<td style="text-align: center;"><strong>−24.6%</strong></td>
+<td style="text-align: center;">−11.8%</td>
+<td style="text-align: center;">−3.7%p</td>
+<td>0.187억원/일</td>
+</tr>
+<tr>
+<td>계절관리제 (12~3월)</td>
+<td style="text-align: center;"><strong>−16.4%</strong></td>
+<td style="text-align: center;">+1.6% (미미)</td>
+<td style="text-align: center;">−0.2%p</td>
+<td>0.140억원/일</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>비계절관리제 주의</strong>: 최적 배분 시 삼천포↓(효율↑→↓) + 영흥↑(효율↓) → 가중 열효율 28.6% → 24.9%로 <strong>3.7%p 하락</strong>. 배출 감축과 연료효율은 상충 관계.<br />
+✅ <strong>계절관리제는 상충 없음</strong>: 영흥 80% 제약 + 분당 LNG 확대로 열효율 거의 동일(-0.2%p)하면서 NOx 16.4% 감축.</p>
+</blockquote>
+<h3 id="66">6.6 기상별 최적 시나리오 상세 (연료 믹스 그리드 결과)</h3>
+<table>
+<thead>
+<tr>
+<th>시나리오</th>
+<th style="text-align: center;">석탄비중%</th>
+<th style="text-align: center;">LNG비중%</th>
+<th style="text-align: center;">삼천포 이용률</th>
+<th style="text-align: center;">영흥 이용률</th>
+<th style="text-align: center;">예상 NOx (ton/일)</th>
+<th style="text-align: center;">예상 SOx (ton/일)</th>
+<th style="text-align: center;">예상 먼지 (ton/일)</th>
+<th style="text-align: center;">가중 열효율%</th>
+<th style="text-align: center;">부과금 절감 (억원/일)</th>
+<th>판단</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>현재 운영</strong></td>
+<td style="text-align: center;">93.5%</td>
+<td style="text-align: center;">6.5%</td>
+<td style="text-align: center;">52.7%</td>
+<td style="text-align: center;">82.8%</td>
+<td style="text-align: center;">22.50</td>
+<td style="text-align: center;">21.25</td>
+<td style="text-align: center;">6.15</td>
+<td style="text-align: center;"><strong>29.2%</strong></td>
+<td style="text-align: center;">0.000</td>
+<td>기준</td>
+</tr>
+<tr>
+<td><strong>시나리오 A</strong> (정상 최적)</td>
+<td style="text-align: center;">93.5%</td>
+<td style="text-align: center;">6.5%</td>
+<td style="text-align: center;"><strong>36%</strong></td>
+<td style="text-align: center;"><strong>94%</strong></td>
+<td style="text-align: center;">20.28</td>
+<td style="text-align: center;">19.05</td>
+<td style="text-align: center;">4.21</td>
+<td style="text-align: center;">25.7%</td>
+<td style="text-align: center;">0.070</td>
+<td>배출저감 (효율↓ 감수)</td>
+</tr>
+<tr>
+<td><strong>시나리오 B</strong> (여름 정체)</td>
+<td style="text-align: center;">93.5%</td>
+<td style="text-align: center;">6.5%</td>
+<td style="text-align: center;"><strong>36%</strong></td>
+<td style="text-align: center;"><strong>94%</strong></td>
+<td style="text-align: center;">20.24</td>
+<td style="text-align: center;">18.95</td>
+<td style="text-align: center;">4.22</td>
+<td style="text-align: center;">25.7%</td>
+<td style="text-align: center;">0.072</td>
+<td>배출저감 (효율↓ 감수)</td>
+</tr>
+<tr>
+<td><strong>시나리오 C</strong> (봄 황사)</td>
+<td style="text-align: center;">93.5%</td>
+<td style="text-align: center;">6.5%</td>
+<td style="text-align: center;"><strong>36%</strong></td>
+<td style="text-align: center;"><strong>94%</strong></td>
+<td style="text-align: center;">20.35</td>
+<td style="text-align: center;">19.02</td>
+<td style="text-align: center;">4.21</td>
+<td style="text-align: center;">25.7%</td>
+<td style="text-align: center;">0.069</td>
+<td>배출저감 (효율↓ 감수)</td>
+</tr>
+<tr>
+<td><strong>시나리오 D</strong> (겨울 관리제)</td>
+<td style="text-align: center;"><strong>82.0%</strong></td>
+<td style="text-align: center;"><strong>18.0%</strong></td>
+<td style="text-align: center;">35%</td>
+<td style="text-align: center;">80%</td>
+<td style="text-align: center;">21.66</td>
+<td style="text-align: center;">18.82</td>
+<td style="text-align: center;">4.10</td>
+<td style="text-align: center;"><strong>27.3%</strong></td>
+<td style="text-align: center;">0.043</td>
+<td>LNG 대체 + 배출저감 ★추천</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>해석</strong>:<br />
+- <strong>시나리오 A/B/C</strong>: 삼천포 감발(52.7%→36%) + 영흥 증발(82.8%→94%)로 NOx·SOx 약 10% 감축. 단, 영흥 기저부하 특성(이용률↑→효율↓)으로 열효율이 29.2%→25.7%로 하락.<br />
+- <strong>시나리오 D</strong> (겨울 계절관리제): 영흥 80% 상한 제약으로 LNG(분당) 비중 18%까지 증가. 열효율(27.3%)이 A/B/C보다 높고 SOx 최소(18.82 ton/일) — 효율·배출 균형 측면에서 <strong>상대적 최선</strong>.</p>
+</blockquote>
+<h3 id="66-vs">6.6 열효율 vs 배출 상충 관계 (핵심 발견)</h3>
+<pre><code>[현재 운영]
+  삼천포 52.7% → 열효율 31.0% (이용률↑→효율↑, 삼천포 특성)
+  영흥   82.8% → 열효율 27.3% (이용률↑→효율↓, 영흥 기저부하 특성)
+
+[최적 배분 (시나리오 A)]
+  삼천포 36.0% → 열효율 25.8% (-5.2%p 악화)
+  영흥   94.0% → 열효율 24.4% (-2.9%p 악화)
+  → 전체 가중 열효율 29.2% → 25.7% (-3.5%p 하락)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>사업소</th>
+<th style="text-align: center;">이용률-열효율 관계</th>
+<th style="text-align: center;">실측 상관계수</th>
+<th style="text-align: center;">최적화 방향</th>
+<th style="text-align: center;">열효율 영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>삼천포</td>
+<td style="text-align: center;">이용률↑ → 효율↑</td>
+<td style="text-align: center;">r = +0.72</td>
+<td style="text-align: center;">이용률 낮춤</td>
+<td style="text-align: center;">효율↓</td>
+</tr>
+<tr>
+<td>영흥</td>
+<td style="text-align: center;">이용률↑ → 효율↓</td>
+<td style="text-align: center;">r = −0.29</td>
+<td style="text-align: center;">이용률 높임</td>
+<td style="text-align: center;">효율↓</td>
+</tr>
+<tr>
+<td>분당(LNG)</td>
+<td style="text-align: center;">이용률↑ → 효율↑</td>
+<td style="text-align: center;">r = +0.54</td>
+<td style="text-align: center;">수요 보완</td>
+<td style="text-align: center;">—</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>결론</strong>: 배출 최소화 방향(삼천포↓, 영흥↑)은 두 사업소의 열효율을 모두 낮추는 방향. 단위 연료당 발전량이 줄어 연료비가 증가할 수 있음 — 운영자는 이 상충 관계를 인지하고 적용 시점(대기정체 위험일 등)을 선택해야 함.</p>
+</blockquote>
+<h3 id="67">6.7 연간 기대 효과 (실제 운영 데이터 기반)</h3>
+<blockquote>
+<p><strong>산출 방식</strong>: 현행 실적 평균(2020~2026) 대비 최적 권고 시나리오 모델 예측값 차이</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>기간</th>
+<th style="text-align: center;">일 NOx 감축</th>
+<th style="text-align: center;">연간 일수</th>
+<th style="text-align: center;">연간 NOx 감축</th>
+<th style="text-align: center;">일 절감액</th>
+<th style="text-align: center;">연간 절감액</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>비계절관리제 (4~11월)</td>
+<td style="text-align: center;">6.60 ton/일</td>
+<td style="text-align: center;">243일</td>
+<td style="text-align: center;">1,606 ton</td>
+<td style="text-align: center;">0.187억원</td>
+<td style="text-align: center;"><strong>45.5억원</strong></td>
+</tr>
+<tr>
+<td>계절관리제 (12~3월)</td>
+<td style="text-align: center;">4.26 ton/일</td>
+<td style="text-align: center;">122일</td>
+<td style="text-align: center;">518 ton</td>
+<td style="text-align: center;">0.140억원</td>
+<td style="text-align: center;"><strong>17.0억원</strong></td>
+</tr>
+<tr>
+<td><strong>연간 합계</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><strong>365일</strong></td>
+<td style="text-align: center;"><strong>2,124 ton/년</strong></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;"><strong>~62.5억원/년</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>산출 근거</strong>: 현행 NOx — 비계절관리제 26.88 ton/일, 계절관리제 25.92 ton/일 (master CSV 실측 평균)<br />
+최적 NOx — 비계절관리제 20.28 ton/일, 계절관리제 21.66 ton/일 (연료 믹스 그리드 최적)</p>
+<p><strong>해석</strong>: 62.5억원은 대기배출부과금 단가 기준 규제 비용 회피액임. 실제 건강 피해 기반 KEI 외부비용 단가 적용 시 이보다 높을 수 있음. 시스템 내 재배분(대체 비용 없음)이므로 추가 투자 없이 달성 가능.</p>
+<p><strong>단일 사업소 감발 (5장) 대비 우위</strong>: 단일 감발은 LNG 증분 대체 비용(55,000원/MWh)이 부과금 편익보다 커서 경제성 미달(B/C &lt; 0.02). 시스템 재배분은 총 발전량 불변이므로 대체 비용 없이 동일 감축 효과.</p>
+</blockquote>
+<hr />
+<h2 id="vii">Ⅶ. 종합 결론 및 정책 권고</h2>
+<h3 id="71">7.1 분석 결론</h3>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>결론</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SOx 예측</strong></td>
+<td>R² 0.62~0.74으로 안정적. 연료 황 함량 proxy(sox_factor_ma30)가 핵심 변수</td>
+</tr>
+<tr>
+<td><strong>NOx 예측</strong></td>
+<td>R² 0.35~0.91. 분당 LNG(0.91)가 삼천포·영흥 석탄(0.35~0.40)보다 우수</td>
+</tr>
+<tr>
+<td><strong>먼지 예측</strong></td>
+<td>모든 모델 R² &lt; 0. 측정 이상치(22일)가 오차의 68~83% 차지 — 구조적 한계</td>
+</tr>
+<tr>
+<td><strong>기상 영향</strong></td>
+<td>삼천포 기온·풍속이 NOx에 가장 민감(각 16%, 13%). 영흥은 기저부하로 기상 영향 완만</td>
+</tr>
+<tr>
+<td><strong>최적 전략</strong></td>
+<td>단일 감발보다 <strong>시스템 배분 최적화</strong>가 효과적 (삼천포 감발 + 영흥 증발)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72">7.2 정책 권고</h3>
+<h4 id="_2">단기 (즉시 적용 가능)</h4>
+<ol>
+<li><strong>여름 대기정체일</strong> (대기정체지수 &gt; 34, 기온 &gt; 27°C, 풍속 &lt; 2 m/s):<br />
+   삼천포 이용률 36% 감발, 영흥 94% 증발 → <strong>NOx 12% 감축</strong> (대체 비용 없는 내부 재배분)</li>
+<li><strong>계절관리제 기간 (12~3월)</strong>: 삼천포 35%, 영흥 80% 배분 + 분당 LNG 보완 → <strong>NOx 8.9% 감축</strong></li>
+<li><strong>적용 우선순위</strong>: 신재생 잉여 발전 시간대에 감발 적용 시 대체 비용 최소화</li>
+</ol>
+<h4 id="_3">중기 (시스템 구축 필요)</h4>
+<ol>
+<li><strong>실시간 배분 최적화 시스템</strong>: 전날 기상 예보 기반으로 3사업소 발전 배분 사전 계획  </li>
+<li><strong>먼지 측정 이상치 필터링</strong>: 설비 점검·시동 이벤트를 별도 플래그로 관리하여 예측 정확도 향상</li>
+</ol>
+<h4 id="_4">장기 (제도·설비 개선)</h4>
+<ol>
+<li><strong>신재생 확대 연계</strong>: 영흥 풍력(53 MWh/일) 증설 시 석탄 감발 여력 확보  </li>
+<li><strong>분당 연료전지 활용</strong>: 대기정체일 분당 연료전지(현 586 MWh/일) 우선 가동으로 석탄 대체</li>
+</ol>
+<h3 id="73">7.3 모델 한계 및 향후 과제</h3>
+<table>
+<thead>
+<tr>
+<th>한계</th>
+<th>내용</th>
+<th>개선 방향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>먼지 R² &lt; 0</td>
+<td>측정 이상치 구조적 지배</td>
+<td>이상치 이벤트 별도 분류 모델</td>
+</tr>
+<tr>
+<td>영흥 이용률-배출 역관계</td>
+<td>부분부하 효율 저하 반영 가능성</td>
+<td>호기별 ON/OFF 조합 모델링</td>
+</tr>
+<tr>
+<td>분당 이용률 분포 편향</td>
+<td>0% 날이 다수 (계통 조건 의존)</td>
+<td>계통 수급 정보 피처 추가</td>
+</tr>
+<tr>
+<td>시스템 수요 고정</td>
+<td>총수요를 현재 평균으로 고정</td>
+<td>전력 계통 수요 예측 연동</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_5">부록</h2>
+<h3 id="a">A. 생성된 분석 산출물</h3>
+<h4 id="reportsplant">사업소별 (<code>reports/{plant}/</code>)</h4>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>eda_01_timeseries.png</code></td>
+<td>배출량·발전량 시계열</td>
+</tr>
+<tr>
+<td><code>eda_02_seasonal_pattern.png</code></td>
+<td>계절별 배출 패턴</td>
+</tr>
+<tr>
+<td><code>eda_03_correlation_heatmap.png</code></td>
+<td>변수 간 상관관계</td>
+</tr>
+<tr>
+<td><code>eda_04_stagnation_analysis.png</code></td>
+<td>대기정체 조건별 분포</td>
+</tr>
+<tr>
+<td><code>model_01_pred_vs_actual.png</code></td>
+<td>예측 vs 실제 비교</td>
+</tr>
+<tr>
+<td><code>shap_SOx/NOx/먼지.png</code></td>
+<td>SHAP 변수 중요도</td>
+</tr>
+<tr>
+<td><code>opt_01_grid_search.png</code></td>
+<td>이용률 그리드 서치</td>
+</tr>
+<tr>
+<td><code>opt_02_scenario_analysis.png</code></td>
+<td>8개 시나리오 감축 효과</td>
+</tr>
+<tr>
+<td><code>opt_03_bc_analysis.png</code></td>
+<td>B/C 비율 분석</td>
+</tr>
+<tr>
+<td><code>weather_01_sensitivity_curves.png</code></td>
+<td>기상 변수별 감도 곡선</td>
+</tr>
+<tr>
+<td><code>weather_02_2d_heatmap.png</code></td>
+<td>기온×풍속 2D 히트맵</td>
+</tr>
+<tr>
+<td><code>dust_model_pred_vs_actual.png</code></td>
+<td>먼지 M1~M5 비교</td>
+</tr>
+<tr>
+<td><code>dust_model_outlier_analysis.png</code></td>
+<td>먼지 이상치 분석</td>
+</tr>
+</tbody>
+</table>
+<h4 id="reports">통합 (<code>reports/</code>)</h4>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fuel_mix_01_2d_heatmap.png</code></td>
+<td>삼천포×영흥 사회적 비용 등고선</td>
+</tr>
+<tr>
+<td><code>fuel_mix_02_scenario_comparison.png</code></td>
+<td>4개 시나리오 최적 믹스 비교</td>
+</tr>
+<tr>
+<td><code>fuel_mix_03_baseline_vs_optimal.png</code></td>
+<td>현재 vs 최적 절감 효과</td>
+</tr>
+<tr>
+<td><code>weather_sensitivity_summary.csv</code></td>
+<td>기상 변수별 NOx 변동폭</td>
+</tr>
+<tr>
+<td><code>dust_model_comparison.csv</code></td>
+<td>M1~M5 모델 성능 비교</td>
+</tr>
+<tr>
+<td><code>fuel_mix_scenario_summary.csv</code></td>
+<td>연료 믹스 최적화 결과</td>
+</tr>
+<tr>
+<td><code>fuel_mix_optimization_results.csv</code></td>
+<td>전체 그리드 서치 조합</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b">B. 신규 작성 스크립트</h3>
+<table>
+<thead>
+<tr>
+<th>스크립트</th>
+<th>역할</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/build_bundang_master.py</code></td>
+<td>분당 마스터 데이터셋 빌드</td>
+</tr>
+<tr>
+<td><code>scripts/update_renewables.py</code></td>
+<td>신재생 데이터 연결 (삼천포·영흥)</td>
+</tr>
+<tr>
+<td><code>scripts/run_training.py</code></td>
+<td>3사업소 배출량 모델 학습</td>
+</tr>
+<tr>
+<td><code>scripts/run_optimization_all.py</code></td>
+<td>3사업소 이용률 최적화 통합 실행</td>
+</tr>
+<tr>
+<td><code>scripts/run_dust_model_review.py</code></td>
+<td>먼지 모델 M1~M5 비교</td>
+</tr>
+<tr>
+<td><code>scripts/weather_sensitivity_viz.py</code></td>
+<td>기상 감도 시각화</td>
+</tr>
+<tr>
+<td><code>scripts/run_fuel_mix_optimization.py</code></td>
+<td>시스템 레벨 연료 믹스 최적화</td>
+</tr>
+<tr>
+<td><code>src/fuel_mix_optimizer.py</code></td>
+<td>연료 믹스 최적화 모듈</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# API 키 및 환경변수 (절대 커밋 금지)
+.env
+
+# 캐시
+.cache/
+.cache.sqlite
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter 체크포인트
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 원천 데이터 (64MB, 외부 제공 파일)
+data/raw/
+
+# Claude Code 세션 데이터 (민감 정보)
+.claude/
+
+# 한글 문서 (경진대회 양식 등)
+*.hwp
+*.hwpx
+
+# 스크린샷
+scre.png

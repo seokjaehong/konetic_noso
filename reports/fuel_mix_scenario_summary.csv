@@ -1,0 +1,5 @@
+﻿scenario,description,demand_mwh,n_combinations,optimal_sam_util_pct,optimal_yh_util_pct,optimal_yd_util_pct,optimal_ys_util_pct,optimal_bd_util_pct,optimal_bd_mwh,baseline_NOx_ton,optimal_NOx_ton,baseline_SOx_ton,optimal_SOx_ton,baseline_dust_ton,optimal_dust_ton,baseline_social_cost_억원,optimal_social_cost_억원,saving_억원_daily,saving_pct
+S0_normal,정상 (봄·가을 평균),106607.0,1089,50.0,94.0,45.0,45.0,2.5,532.0,29.43,26.18,21.38,20.62,8.21,6.36,0.797,0.71,0.087,10.9
+SA_summer_stagnation,여름 대기정체 (냉방 피크),136701.0,303,53.8,94.0,90.0,84.0,97.7,20860.0,29.58,29.87,21.57,20.74,9.64,6.31,0.812,0.788,0.024,2.9
+SE_spring_dust,봄 황사 (수요 저점),106390.0,1076,50.0,94.0,45.0,45.0,1.5,315.0,29.52,26.04,21.29,20.58,8.77,6.36,0.803,0.707,0.096,12.0
+SF_winter_stagnation,겨울 계절관리제 (난방 수요),119421.0,1014,50.0,80.0,71.2,62.5,96.8,20681.0,29.51,28.52,21.31,20.34,10.57,6.1,0.817,0.756,0.06,7.4
